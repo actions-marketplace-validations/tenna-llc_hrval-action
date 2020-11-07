@@ -177,27 +177,25 @@ jobs:
           helmSourcesCacheEnabled: true
 ```
 
+## Usage with Chart repo username and password
 
-## CI alternatives
+Sometimes a helm repo is gated by username and password.  The property `chartRepoUserName` and `chartRepoPassword` allows the info to be proxied to it.
 
-The validation scripts can be used in any CI system.
-
-CircleCI example:
 
 ```yaml
-version: 2.1
+name: CI
+
+on: [pull_request]
+
 jobs:
   hrval:
-    docker:
-      - image: stefanprodan/hrval:latest
+    runs-on: ubuntu-latest
     steps:
-      - checkout
-      - run:
-          name: Validate Helm Releases in test dir
-          command: |
-            IGNORE_VALUES=false
-            KUBE_VER=master
-            HELM_VER=v2
-
-            hrval test/ $IGNORE_VALUES $KUBE_VER $HELM_VER
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: tenna-llc/hrval-action@master
+        with:
+          helmRelease: test/
+          chartRepoUserName: chartUser
+          chartRepoPassword: chartPassword
 ```
