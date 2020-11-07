@@ -1,4 +1,4 @@
-name: 'Validate Flux Helm Release'
+name: 'Validate Flux Helm Release For Gated Helm Repos'
 description: 'Github Action to validate Flux Helm Releases with kubeval'
 author: 'Stefan Prodan'
 branding:
