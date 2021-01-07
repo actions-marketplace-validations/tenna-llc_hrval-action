@@ -211,29 +211,3 @@ function validate {
 }
 
 validate
-
-
-function check_image_exist {
-    IMAGE_REPO="${1}"
-    IMAGE_TAG="${2}"
-}
-
-function evaluate_yaml_alias {
-
-}
-
-function find_image_spec {
-
-
-    # check spec.values.service exists
-
-    # check spec.values.cron exists
-
-    # check spec.values.migration exists
-}
-
-function validate_images {
-
-}
-
-validate_images
