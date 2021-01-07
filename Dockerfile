@@ -9,5 +9,6 @@ RUN /deps.sh
 
 COPY src/hrval.sh /usr/local/bin/hrval.sh
 COPY src/hrval-all.sh /usr/local/bin/hrval
+COPY src/imageval.sh /usr/local/bin/imageval.sh
 
 ENTRYPOINT ["hrval"]
