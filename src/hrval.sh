@@ -180,7 +180,7 @@ function validate {
   HELM_RELEASE_NAMESPACE=$(yq r "${HELM_RELEASE}" metadata.namespace)
 
   if [[ "${IGNORE_VALUES}" == "true" ]]; then
-    echo "Ingnoring Helm release values"
+    echo "Ignoring Helm release values"
     echo "" > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
@@ -211,3 +211,29 @@ function validate {
 }
 
 validate
+
+
+function check_image_exist {
+    IMAGE_REPO="${1}"
+    IMAGE_TAG="${2}"
+}
+
+function evaluate_yaml_alias {
+
+}
+
+function find_image_spec {
+
+
+    # check spec.values.service exists
+
+    # check spec.values.cron exists
+
+    # check spec.values.migration exists
+}
+
+function validate_images {
+
+}
+
+validate_images
