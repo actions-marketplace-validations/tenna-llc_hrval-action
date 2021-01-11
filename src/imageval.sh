@@ -29,8 +29,28 @@ function check_image_exist {
         echo "Found yaml alias ${IMAGE_TAG}"
     fi
 
+    # repo name should only be the org name with repo name
+    if [[ "${IMAGE_REPO}" =~ ^ghcr.io.* ]]; then
+        REPO_NAME=$(echo ${IMAGE_REPO} | cut -d'/' -f2-)
+    else
+        REPO_NAME=$IMAGE_REPO
+    fi
+
     # check if the image exists
-    docker pull "${IMAGE_REPO}":"${IMAGE_TAG}" > /dev/null && NON_EXIST_IMAGE="no" || NON_EXIST_IMAGE="yes"
+    GHCR_TOKEN=$(curl -u ten-chh:1f5a60ffc5d5d4e6821071520d76f26794cc49db https://ghcr.io/token\?scope=\="repository:${IMAGE_REPO}:pull" | jq .token)
+    STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG})
+
+    echo "Status code: ${STATUS_CODE}"
+    echo "Repo name: ${REPO_NAME}"
+    echo "GHCR token: ${GHCR_TOKEN}"
+    echo "curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer "${GHCR_TOKEN}"" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG}"
+
+    if [[ "${STATUS_CODE}" == "200" ]]; then
+        NON_EXIST_IMAGE="no"
+    else
+        NON_EXIST_IMAGE="yes"
+    fi
+
     echo "Validating ${IMAGE_REPO}:${IMAGE_TAG}. Is the image missing? ${NON_EXIST_IMAGE}"
 
     eval $__IMAGES_MISSING="${NON_EXIST_IMAGE}"
