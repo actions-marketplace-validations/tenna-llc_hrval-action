@@ -6,6 +6,8 @@ curl -sL "https://storage.googleapis.com/kubernetes-release/release/$(curl -s ht
 
 curl -sL https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
+curl -sL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/local/bin/jq && chmod +x /usr/local/bin/jq
+
 curl -sSL https://get.helm.sh/helm-v2.16.3-linux-amd64.tar.gz | tar xz && mv linux-amd64/helm /bin/helm && rm -rf linux-amd64
 
 helm init --client-only --stable-repo-url="https://charts.bitnami.com/bitnami" --kubeconfig="${HOME}/.kube/kubeconfig"

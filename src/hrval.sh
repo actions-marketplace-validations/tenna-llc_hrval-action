@@ -180,7 +180,7 @@ function validate {
   HELM_RELEASE_NAMESPACE=$(yq r "${HELM_RELEASE}" metadata.namespace)
 
   if [[ "${IGNORE_VALUES}" == "true" ]]; then
-    echo "Ingnoring Helm release values"
+    echo "Ignoring Helm release values"
     echo "" > "${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"
   else
     echo "Extracting values to ${TMPDIR}/${HELM_RELEASE_NAME}.values.yaml"

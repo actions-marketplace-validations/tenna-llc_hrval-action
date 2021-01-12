@@ -32,8 +32,10 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
+        env:
+          GHCR_PAT: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE }}
       - name: Check tested file count
         env:
           NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
-        run: "(( NUM_FILES_TESTED==2 ))"
+        run: "(( NUM_FILES_TESTED==3 ))"
 
