@@ -37,13 +37,8 @@ function check_image_exist {
     fi
 
     # check if the image exists
-    GHCR_TOKEN=$(curl -u ten-chh:69e4605d89b77a40327bde3669a3695e270455c8 https://ghcr.io/token\?scope=\="repository:${IMAGE_REPO}:pull" | jq .token -r)
+    GHCR_TOKEN=$(curl -u ten-integration:${GHCR_PAT} https://ghcr.io/token\?scope=\="repository:${IMAGE_REPO}:pull" | jq .token -r)
     STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG})
-
-    echo "Status code: ${STATUS_CODE}"
-    echo "Repo name: ${REPO_NAME}"
-    echo "GHCR token: ${GHCR_TOKEN}"
-    echo "curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer "${GHCR_TOKEN}"" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG}"
 
     if [[ "${STATUS_CODE}" == "200" ]]; then
         NON_EXIST_IMAGE="no"
