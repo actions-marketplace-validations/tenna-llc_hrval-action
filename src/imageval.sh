@@ -28,12 +28,12 @@ function check_image_exist {
 
     # repo name should only be the org name with repo name
     if [[ "${IMAGE_REPO}" =~ ^ghcr.io.* ]]; then
-        REPO_NAME=$(echo ${IMAGE_REPO} | cut -d'/' -f2-)
-        GHCR_TOKEN=$(curl -u ten-integration:${GHCR_PAT} https://ghcr.io/token\?scope=\="repository:${IMAGE_REPO}:pull" | jq .token -r)
-        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG})
+        REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
+        GHCR_TOKEN=$(curl -u ten-integration:"${GHCR_PAT}" https://ghcr.io/token?scope="repository:${IMAGE_REPO}:pull" | jq .token -r)
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     else
-        REPO_NAME=$(echo ${IMAGE_REPO} | cut -d'/' -f2-)
-        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u ten-integration:${GHCR_PAT} https://docker.pkg.github.com/v2/${REPO_NAME}/manifests/${IMAGE_TAG})
+        REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u ten-integration:"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     fi
 
     if [[ "${STATUS_CODE}" == "200" ]]; then
@@ -44,12 +44,13 @@ function check_image_exist {
 
     echo "Validating ${IMAGE_REPO}:${IMAGE_TAG}. Is the image missing? ${NON_EXIST_IMAGE}"
 
-    eval $__IMAGES_MISSING="${NON_EXIST_IMAGE}"
+    eval "$__IMAGES_MISSING"="${NON_EXIST_IMAGE}"
 }
 
 function evaluate_yaml_alias {
     local YAML_ALIAS="${1}"
-    local YAML_ALIAS_KEY=$(echo "${YAML_ALIAS}" | tr "*" "&")
+    local YAML_ALIAS_KEY=""
+    YAML_ALIAS_KEY=$(echo "${YAML_ALIAS}" | tr "*" "&")
 
     grep "${YAML_ALIAS_KEY}" "${HELM_RELEASE}" | cut -d '"' -f2
 }
