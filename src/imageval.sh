@@ -9,9 +9,6 @@ HELM_RELEASE="${1}"
 SERVICE_IMAGE_REPO=$(yq r "${HELM_RELEASE}" spec.values.service.image.repository --defaultValue "${NOT_EXIST_INDICATOR}")
 CRON_IMAGE_REPO=$(yq r "${HELM_RELEASE}" spec.values.cron.image.repository --defaultValue "${NOT_EXIST_INDICATOR}")
 MIGRATION_IMAGE_REPO=$(yq r "${HELM_RELEASE}" spec.values.migration.image.repository --defaultValue "${NOT_EXIST_INDICATOR}")
-echo $SERVICE_IMAGE_REPO
-echo $CRON_IMAGE_REPO
-echo $MIGRATION_IMAGE_REPO
 
 function check_image_exist {
     local IMAGE_REPO="${1}"
@@ -31,14 +28,13 @@ function check_image_exist {
 
     # repo name should only be the org name with repo name
     if [[ "${IMAGE_REPO}" =~ ^ghcr.io.* ]]; then
-        REPO_NAME=$(echo ${IMAGE_REPO} | cut -d'/' -f2-)
+        REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
+        GHCR_TOKEN=$(curl -u ten-integration:"${GHCR_PAT}" https://ghcr.io/token?scope="repository:${IMAGE_REPO}:pull" | jq .token -r)
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     else
-        REPO_NAME=$IMAGE_REPO
+        REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u ten-integration:"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     fi
-
-    # check if the image exists
-    GHCR_TOKEN=$(curl -u ten-integration:${GHCR_PAT} https://ghcr.io/token\?scope=\="repository:${IMAGE_REPO}:pull" | jq .token -r)
-    STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/${REPO_NAME}/manifests/${IMAGE_TAG})
 
     if [[ "${STATUS_CODE}" == "200" ]]; then
         NON_EXIST_IMAGE="no"
@@ -48,12 +44,13 @@ function check_image_exist {
 
     echo "Validating ${IMAGE_REPO}:${IMAGE_TAG}. Is the image missing? ${NON_EXIST_IMAGE}"
 
-    eval $__IMAGES_MISSING="${NON_EXIST_IMAGE}"
+    eval "$__IMAGES_MISSING"="${NON_EXIST_IMAGE}"
 }
 
 function evaluate_yaml_alias {
     local YAML_ALIAS="${1}"
-    local YAML_ALIAS_KEY=$(echo "${YAML_ALIAS}" | tr "*" "&")
+    local YAML_ALIAS_KEY=""
+    YAML_ALIAS_KEY=$(echo "${YAML_ALIAS}" | tr "*" "&")
 
     grep "${YAML_ALIAS_KEY}" "${HELM_RELEASE}" | cut -d '"' -f2
 }
@@ -61,12 +58,14 @@ function evaluate_yaml_alias {
 function validate_images {
 
     local IMAGES_MISSING="no"
+    local ANY_IMAGE_MISSING="no"
 
     # check spec.values.service exists
     if [[ "${SERVICE_IMAGE_REPO}" != "${NOT_EXIST_INDICATOR}" ]]; then
         echo "Processing service image"
         SERVICE_IMAGE_TAG=$(yq r "${HELM_RELEASE}" spec.values.service.image.tag --defaultValue "${NOT_EXIST_INDICATOR}")
         check_image_exist "${SERVICE_IMAGE_REPO}" "${SERVICE_IMAGE_TAG}" IMAGES_MISSING
+        if [[ "${IMAGES_MISSING}" == "yes" ]]; then ANY_IMAGE_MISSING="yes"; fi
     fi
 
     # check spec.values.cron exists
@@ -74,6 +73,7 @@ function validate_images {
         echo "Processing cron image"
         CRON_IMAGE_TAG=$(yq r "${HELM_RELEASE}" spec.values.cron.image.tag --defaultValue "${NOT_EXIST_INDICATOR}")
         check_image_exist "${CRON_IMAGE_REPO}" "${CRON_IMAGE_TAG}" IMAGES_MISSING
+        if [[ "${IMAGES_MISSING}" == "yes" ]]; then ANY_IMAGE_MISSING="yes"; fi
     fi
 
     # check spec.values.migration exists
@@ -81,10 +81,11 @@ function validate_images {
         echo "Processing migration image"
         MIGRATION_IMAGE_TAG=$(yq r "${HELM_RELEASE}" spec.values.migration.image.tag --defaultValue "${NOT_EXIST_INDICATOR}")
         check_image_exist "${MIGRATION_IMAGE_REPO}" "${MIGRATION_IMAGE_TAG}" IMAGES_MISSING
+        if [[ "${IMAGES_MISSING}" == "yes" ]]; then ANY_IMAGE_MISSING="yes"; fi
     fi
 
     echo "Are there non-existent images in the Helm Release? ${IMAGES_MISSING}"
-    if [[ "${IMAGES_MISSING}" == "yes" ]]; then exit 1; else exit 0; fi
+    if [[ "${ANY_IMAGE_MISSING}" == "yes" ]]; then exit 1; else exit 0; fi
 }
 
 validate_images

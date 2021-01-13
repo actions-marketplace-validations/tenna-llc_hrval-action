@@ -2,9 +2,6 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 aliases:
   tenna/image_tag: &image_tag "v1.20.0-build.35.cognito"
-  tenna/rw_env: &rw_env
-    - name: NODE_ENV
-      value: "production"
 metadata:
   name: podinfo
   namespace: demo
@@ -35,6 +32,5 @@ spec:
         tag: *image_tag
     service:
       image:
-        repository: ghcr.io/tenna-llc/be-crud
-        tag: *image_tag
-
+        repository: docker.pkg.github.com/tenna-llc/hapi-server-aemp-exporter/hapi-server-aemp-exporter
+        tag: "v4.0.0-6"
