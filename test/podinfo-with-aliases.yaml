@@ -35,6 +35,6 @@ spec:
         tag: *image_tag
     service:
       image:
-        repository: ghcr.io/tenna-llc/be-crud
-        tag: *image_tag
+        repository: docker.pkg.github.com/tenna-llc/hapi-server-aemp-exporter/hapi-server-aemp-exporter
+        tag: "v4.0.0-6"
 
