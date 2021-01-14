@@ -17,9 +17,6 @@ fi
 
 echo "Processing ${HELM_RELEASE}"
 
-echo "hrval - CHART_REPO_USERNAME: ${CHART_REPO_USERNAME}"
-echo "hrval - CHART_REPO_PASSWORD: ${CHART_REPO_PASSWORD}"
-
 function isHelmRelease {
   KIND=$(yq r "${1}" kind)
   if [[ "${KIND}" == "HelmRelease" ]]; then
