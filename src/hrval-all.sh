@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -o errexit
+alias helmv3='helm'
 
 DIR=${1}
 IGNORE_VALUES=${2-false}
@@ -62,7 +63,7 @@ done < <(find "${DIR}" -type f -name '*.yaml' -o -name '*.yml')
 for f in "${FOUND_FILES[@]}"; do
   if [[ $(isHelmRelease "${f}") == "true" ]]; then
     ${HRVAL} "${f}" "${IGNORE_VALUES}" "${KUBE_VER}" "${HELM_VER}" "${CACHEDIR}" "${CHART_REPO_USERNAME}" "${CHART_REPO_PASSWORD}"
-    ${IMAGEVAL} "${f}"
+    ${IMAGEVAL} "${f}" "${CHART_REPO_USERNAME}" "${CHART_REPO_PASSWORD}"
     FILES_TESTED=$(( FILES_TESTED+1 ))
   else
     echo "Ignoring ${f} not a HelmRelease"
