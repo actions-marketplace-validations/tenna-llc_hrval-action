@@ -18,20 +18,10 @@ jobs:
         with:
           helmRelease: test/podinfo.yaml
           helmVersion: v3
-      - name: Validate Helm Release from Git Repo
-        uses: ./
-        with:
-          helmRelease: test/podinfo-with-aliases.yaml
-          helmVersion: v3
       - name: Validate Helm Release without values
         uses: ./
         with:
           helmRelease: test/podinfo.yaml
-          ignoreValues: true
-      - name: Validate Helm Release without values
-        uses: ./
-        with:
-          helmRelease: test/podinfo-with-aliases.yaml
           ignoreValues: true
   test-dir:
     runs-on: ubuntu-latest
@@ -42,10 +32,8 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
-          ghcrPersonalAccessToken: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE }}
-          ghcrUser: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE_USERNAME }}
       - name: Check tested file count
         env:
           NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
-        run: "(( NUM_FILES_TESTED==3 ))"
+        run: "(( NUM_FILES_TESTED==2 ))"
 
