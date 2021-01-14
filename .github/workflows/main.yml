@@ -42,8 +42,8 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
-        env:
-          GHCR_PAT: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE }}
+          ghcrPersonalAccessToken: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE }}
+          ghcrUser: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE_USERNAME }}
       - name: Check tested file count
         env:
           NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
