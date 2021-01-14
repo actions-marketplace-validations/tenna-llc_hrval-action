@@ -35,6 +35,8 @@ function download {
 
   CHART_REPO_MD5=$(/bin/echo "${CHART_REPO}" | /usr/bin/md5sum | cut -f1 -d" ")
 
+  echo "chart repo username: ${CHART_REPO_USERNAME}"
+
   if [[ "${HELM_VER}" == "v3" ]]; then
     if [[ -z ${CHART_REPO_USERNAME} ]];
     then
