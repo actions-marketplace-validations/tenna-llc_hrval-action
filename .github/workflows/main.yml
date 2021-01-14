@@ -28,21 +28,6 @@ jobs:
         with:
           helmRelease: test/podinfo.yaml
           ignoreValues: true
-      # - name: Validate Helm Release from Git Repo
-      #   uses: ./
-      #   with:
-      #     chartRepoPassword: ${{ secrets.HELM_PASSWORD }}
-      #     chartRepoUserName: ${{ secrets.HELM_USER }}
-      #     helmRelease: test/tenna-chart-server.yaml
-      #     helmVersion: v3
-      #     kubernetesVersion: "1.17.0"
-      # - name: Validate Helm Release without values
-      #   uses: ./
-      #   with:
-      #     helmRelease: test/tenna-chart-server.yaml
-      #     ignoreValues: true
-      #     chartRepoPassword: ${{ secrets.HELM_PASSWORD }}
-      #     chartRepoUserName: ${{ secrets.HELM_USER }}
       - name: Validate Helm Release without values
         uses: ./
         with:
@@ -57,12 +42,8 @@ jobs:
         uses: ./
         with:
           helmRelease: test/
-          chartRepoPassword: ${{ secrets.HELM_PASSWORD }}
-          chartRepoUserName: ${{ secrets.HELM_USER }}
         env:
           GHCR_PAT: ${{ secrets.READ_PACKAGES_ALL_TENNA_PRIVATE }}
-          REPO_USER: ${{ secrets.HELM_USER }}
-          REPO_PW: ${{ secrets.HELM_PASSWORD }}
       - name: Check tested file count
         env:
           NUM_FILES_TESTED: ${{ steps.validate-dir.outputs.numFilesTested }}
