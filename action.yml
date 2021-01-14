@@ -35,6 +35,12 @@ inputs:
   helmSourcesCacheEnabled:
     description: '(Optional) Enabled Helm source caching, so same release or ref will not be downloaded twice.'
     default: 'false'
+  ghcrPersonalAccessToken:
+    description: '(Required if using GHCR) The PAT to access GHCR'
+    default: ''
+  ghcrUser:
+    description: '(Required if using GHCR) The GitHub user associated with the GHCR PAT'
+    default: ''
 outputs:
   numFilesTested:
     description: The number of HelmRelease files which were tested
@@ -53,3 +59,5 @@ runs:
     - ${{ inputs.chartRepoUserName }}
     - ${{ inputs.chartRepoPassword }}
     - ${{ inputs.helmSourcesCacheEnabled }}
+    - ${{ inputs.ghcrPersonalAccessToken }}
+    - ${{ inputs.ghcrUser }}
