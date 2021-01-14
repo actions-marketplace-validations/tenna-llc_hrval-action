@@ -5,6 +5,8 @@ set -o errexit
 NOT_EXIST_INDICATOR="not-exist"
 
 HELM_RELEASE="${1}"
+GHCR_PAT="${2}"
+GHCR_USER="${3}"
 
 SERVICE_IMAGE_REPO=$(yq r "${HELM_RELEASE}" spec.values.service.image.repository --defaultValue "${NOT_EXIST_INDICATOR}")
 CRON_IMAGE_REPO=$(yq r "${HELM_RELEASE}" spec.values.cron.image.repository --defaultValue "${NOT_EXIST_INDICATOR}")
@@ -29,11 +31,11 @@ function check_image_exist {
     # repo name should only be the org name with repo name
     if [[ "${IMAGE_REPO}" =~ ^ghcr.io.* ]]; then
         REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
-        GHCR_TOKEN=$(curl -u ten-integration:"${GHCR_PAT}" https://ghcr.io/token?scope="repository:${IMAGE_REPO}:pull" | jq .token -r)
+        GHCR_TOKEN=$(curl -u "${GHCR_USER}":"${GHCR_PAT}" https://ghcr.io/token?scope="repository:${IMAGE_REPO}:pull" | jq .token -r)
         STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     else
         REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
-        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u ten-integration:"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
+        STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${GHCR_USER}":"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     fi
 
     if [[ "${STATUS_CODE}" == "200" ]]; then

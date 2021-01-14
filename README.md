@@ -199,3 +199,26 @@ jobs:
           chartRepoUserName: chartUser
           chartRepoPassword: chartPassword
 ```
+
+## Usage with GHCR
+
+More often than not GHCR container images is gated by username and password.  The property `ghcrPersonalAccessToken` and `ghcrUser` allows the info to be proxied to it.
+
+
+```yaml
+name: CI
+
+on: [pull_request]
+
+jobs:
+  hrval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate Helm Releases in test dir
+        uses: tenna-llc/hrval-action@master
+        with:
+          helmRelease: test/
+          ghcrUser: GitHubUserName
+          ghcrPersonalAccessToken: GitHubPersonalAccessToken
+```
