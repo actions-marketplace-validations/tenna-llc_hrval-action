@@ -33,7 +33,7 @@ function check_image_exist {
         REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
         GHCR_TOKEN=$(curl -u "${GHCR_USER}":"${GHCR_PAT}" https://ghcr.io/token?scope="repository:${IMAGE_REPO}:pull" | jq .token -r)
         STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H"Authorization: Bearer ${GHCR_TOKEN}" https://ghcr.io/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
-    else
+    elif [[ "${IMAGE_REPO}" =~ ^docker.pkg.github.com.* ]]; then
         REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
         STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${GHCR_USER}":"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
     fi
