@@ -202,7 +202,7 @@ jobs:
 
 ## Usage with GHCR
 
-More often than not GHCR container images is gated by username and password.  The property `ghcrPersonalAccessToken` and `ghcrUser` allows the info to be proxied to it.
+This action also checks if GHCR-hosted images exist or not. More often than not GHCR container images is gated by username and password.  The property `ghcrPersonalAccessToken` and `ghcrUser` allows the info to be proxied to it.
 
 
 ```yaml
