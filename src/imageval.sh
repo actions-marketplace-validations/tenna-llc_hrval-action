@@ -36,6 +36,8 @@ function check_image_exist {
     elif [[ "${IMAGE_REPO}" =~ ^docker.pkg.github.com.* ]]; then
         REPO_NAME=$(echo "${IMAGE_REPO}" | cut -d'/' -f2-)
         STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${GHCR_USER}":"${GHCR_PAT}" https://docker.pkg.github.com/v2/"${REPO_NAME}"/manifests/"${IMAGE_TAG}")
+    else
+        STATUS_CODE="200"
     fi
 
     if [[ "${STATUS_CODE}" == "200" ]]; then
